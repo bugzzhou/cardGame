@@ -16,3 +16,7 @@ func (c Character) PlayCard() {}
 func (c Character) DrawCard() {}
 
 func (c Character) Restart() {}
+
+func PlayOneCard() {
+
+}

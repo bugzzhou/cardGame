@@ -1,4 +1,83 @@
-名称
+# 设计
+
+## 核心结构体
+```go
+type Character struct {
+	Name         string
+	Energy       int
+	AllCards     []Card
+	DrawCards    []Card
+	DiscardCards []Card
+	HandCards    []Card
+	Lotions      []Lotion
+	Props        []Prop
+}
+```
+
+
+
+## 状态图
+```mermaid
+stateDiagram-v2
+
+state 
+    "draw：n
+    hand：0
+    discard：m" 
+as 状态1
+state 
+    "draw：m+n
+    hand：0
+    discard：0" 
+as 状态2
+state 
+    "draw：m+n-5
+    hand：5
+    discard：0" 
+as 状态3.1
+state 
+    "draw：n-5
+    hand：5
+    discard：m" 
+as 状态3.2
+state 
+    "draw：m+n-5
+    hand：4
+    discard：1" 
+as 状态4.1
+state 
+    "draw：n-5
+    hand：4
+    discard：1+m" 
+as 状态4.2
+state 
+    "draw：m+n-5
+    hand：0
+    discard：5" 
+as 状态5.1
+state 
+    "draw：n-5
+    hand：0
+    discard：5+m" 
+as 状态5.2
+
+
+[*] --> 状态1
+状态1 --> 状态2: （抽牌堆不够）洗牌
+状态2 --> 状态3.1: 抽牌
+状态3.1 --> 状态4.1: 打牌
+状态4.1 --> 状态5.1: 结束回合
+状态5.1 --> [*]
+
+状态1 --> 状态3.2: 抽牌（抽牌堆够）
+状态3.2 --> 状态4.2: 打牌
+状态4.2 --> 状态5.2: 结束回合
+状态5.2 --> [*]
+
+```
+
+
+
 
 
 
@@ -37,3 +116,5 @@ combat
 2、combat
 2.1、success -> get booty -> return 1
 2.2、failed -> return 0 -->
+
+
