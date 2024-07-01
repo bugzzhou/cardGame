@@ -26,3 +26,5 @@ func TestDrawCards(t *testing.T) {
 	initC := InitCharacter()
 	fmt.Printf("initC is: %v\n", initC)
 }
+
+
