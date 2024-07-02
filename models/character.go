@@ -5,9 +5,19 @@ import (
 )
 
 type Character struct {
-	Name         string
-	Health       int
-	Energy       int
+	Name        string
+	HealthLimit int
+	Health      int
+	EnergyLimit int
+	Energy      int
+
+	Power     int
+	Dexterity int
+	Shield    int
+
+	Buffs   []Effect
+	Debuffs []Effect
+
 	DrawNum      int
 	AllCards     []Card
 	DrawCards    []Card

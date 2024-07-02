@@ -2,48 +2,108 @@ package models
 
 import (
 	"fmt"
+	comm "sts/common"
 	"testing"
 )
 
 const DefaultDrawNum = 5
 
-func InitCharacter() Character {
+func AffectFunc1(c1, c2 *Character) {
+	defaultDamage := 7
+	power := 0
+	mul := 1.0
+
+	c1Buff := c1.Buffs
+	c2Debuff := c2.Debuffs
+
+	for _, v := range c1Buff {
+		if v.TypeId == 1 {
+			power = v.Value
+			break
+		}
+	}
+
+	for _, v := range c2Debuff {
+		if v.TypeId == 102 {
+			mul *= 1.5
+		}
+	}
+
+	fmt.Println(int(float64(defaultDamage+power) * mul))
+
+	c2.Health -= int(float64(defaultDamage+power) * mul)
+}
+
+func AffectFunc2(c1, c2 *Character) {
+	c1.Shield += 5
+}
+
+func InitCharacter(tag bool) Character {
+	var buff []Effect
+	var deBuff []Effect
+
+	if tag {
+		buff = []Effect{
+			{
+				TypeId: 1,
+				Value:  10,
+			},
+		}
+		deBuff = []Effect{
+			{
+				TypeId: 102,
+			},
+		}
+	}
+
 	Card1 := Card{
-		ID: 1, Name: "攻击", CardType: "attack", Cost: 1,
+		ID: 1, Name: "攻击", CardType: "attack", Cost: 1, AffectFunc: AffectFunc1,
 	}
 	Card2 := Card{
-		ID: 2, Name: "防御", CardType: "defence", Cost: 1,
+		ID: 2, Name: "防御", CardType: "defence", Cost: 1, AffectFunc: AffectFunc2,
 	}
 	return Character{
-		Name:    "a",
-		Energy:  3,
+		Name:        "a",
+		HealthLimit: 99,
+		Health:      99,
+		Energy:      3,
+
+		Buffs:   buff,
+		Debuffs: deBuff,
+
 		DrawNum: DefaultDrawNum,
 		AllCards: []Card{
-			Card1, Card1, Card1, Card1, Card1,
-			Card2, Card2, Card2, Card2, Card2,
+			Card1, Card2, Card1, Card2, Card1,
+			Card2, Card1, Card2, Card1, Card2,
 		},
 		DrawCards: []Card{
-			Card1, Card1, Card1, Card1, Card1,
-			Card2, Card2, Card2, Card2, Card2,
+			Card1, Card2, Card1, Card2, Card1,
+			Card2, Card1, Card2, Card1, Card2,
 		},
 	}
 }
 
 func TestDrawCards(t *testing.T) {
-	initC := InitCharacter()
-	displayNum(initC)
+	initC := InitCharacter(true)
+	initD := InitCharacter(false)
+	displayNum(initC, initD)
 
 	initC.DrawCard(5)
-	displayNum(initC)
+	initC.HandCards[comm.R.Intn(len(initC.HandCards))].AffectFunc(&initC, &initD)
+
+	initD.DrawCard(5)
+	initD.HandCards[comm.R.Intn(len(initD.HandCards))].AffectFunc(&initD, &initC)
+	displayNum(initC, initD)
 
 	initC.EndTurn()
-	displayNum(initC)
+	displayNum(initC, initD)
 
 }
 
-func displayNum(c Character) {
-	fmt.Printf("AllCards' num is: %d\n", len(c.AllCards))
-	fmt.Printf("DrawCards' num is: %d\n", len(c.DrawCards))
-	fmt.Printf("HandCards' num is: %d\n", len(c.HandCards))
-	fmt.Printf("DiscardCards' num is: %d\n", len(c.DiscardCards))
+func displayNum(c, d Character) {
+	// fmt.Printf("AllCards' num is: %d\n", len(c.AllCards))
+	// fmt.Printf("DrawCards' num is: %d\n", len(c.DrawCards))
+	// fmt.Printf("HandCards' num is: %d\n", len(c.HandCards))
+	// fmt.Printf("DiscardCards' num is: %d\n", len(c.DiscardCards))
+	fmt.Printf("%v %v %v %v\n", c.Health, c.Shield, d.Health, d.Shield)
 }
