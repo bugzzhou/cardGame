@@ -16,6 +16,8 @@ type Character struct {
 
 
 
+
+
 ## 状态图
 ```mermaid
 stateDiagram-v2

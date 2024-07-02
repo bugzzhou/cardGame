@@ -1,8 +1,14 @@
 package models
 
+import (
+	comm "sts/common"
+)
+
 type Character struct {
 	Name         string
+	Health       int
 	Energy       int
+	DrawNum      int
 	AllCards     []Card
 	DrawCards    []Card
 	DiscardCards []Card
@@ -11,12 +17,33 @@ type Character struct {
 	Props        []Prop
 }
 
-func (c Character) PlayCard() {}
+func (c *Character) DrawCard(drawNum int) {
+	// 弃牌堆 - > 抽牌堆
+	if len(c.DrawCards) < drawNum {
+		c.DrawCards = append(c.DrawCards, c.DiscardCards...)
+		c.DiscardCards = nil
+		comm.R.Shuffle(len(c.DrawCards), func(i, j int) {
+			c.DrawCards[i], c.DrawCards[j] = c.DrawCards[j], c.DrawCards[i]
+		})
+	}
 
-func (c Character) DrawCard() {}
-
-func (c Character) Restart() {}
-
-func PlayOneCard() {
-
+	// 抽牌堆 - > 手牌
+	if len(c.DrawCards) <= drawNum {
+		c.HandCards = append(c.HandCards, c.DrawCards...)
+		c.DrawCards = nil
+	} else {
+		c.HandCards = append(c.HandCards, c.DrawCards[:drawNum]...)
+		c.DrawCards = c.DrawCards[drawNum:]
+	}
 }
+
+func (c *Character) EndTurn() {
+	c.DiscardCards = append(c.DiscardCards, c.HandCards...)
+	c.HandCards = nil
+}
+
+func (c *Character) PlayCard(index int) {}
+
+func (c *Character) Restart() {}
+
+func (c *Character) GetCard() {}
