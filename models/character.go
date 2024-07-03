@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	comm "sts/common"
 )
 
@@ -52,7 +53,18 @@ func (c *Character) EndTurn() {
 	c.HandCards = nil
 }
 
-func (c *Character) PlayCard(index int) {}
+// TODO bugzzhou 添加虚无、消耗 的牌类型，用于在play、end的时候进行特殊处理（放到消耗牌堆 & 还需要增加消耗牌堆字段）
+func (c *Character) PlayCard(index int, enemy *Character) {
+	if len(c.HandCards) < index {
+		fmt.Printf("failed to play card, out of length of the handCard\n")
+		return
+	}
+
+	c.HandCards[index].AffectFunc.Run(c, enemy)
+
+	c.DiscardCards = append(c.DiscardCards, c.HandCards[index])
+	c.HandCards = append(c.HandCards[:index], c.HandCards[index+1:]...)
+}
 
 func (c *Character) Restart() {}
 

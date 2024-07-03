@@ -3,7 +3,7 @@ package models
 type CharacterInter interface {
 	Restart()
 	DrawCard(int)
-	PlayCard(int)
+	PlayCard(int, *Character)
 	EndTurn()
 	GetCard()
 }

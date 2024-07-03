@@ -8,36 +8,6 @@ import (
 
 const DefaultDrawNum = 5
 
-func AffectFunc1(c1, c2 *Character) {
-	defaultDamage := 7
-	power := 0
-	mul := 1.0
-
-	c1Buff := c1.Buffs
-	c2Debuff := c2.Debuffs
-
-	for _, v := range c1Buff {
-		if v.TypeId == 1 {
-			power = v.Value
-			break
-		}
-	}
-
-	for _, v := range c2Debuff {
-		if v.TypeId == 102 {
-			mul *= 1.5
-		}
-	}
-
-	fmt.Println(int(float64(defaultDamage+power) * mul))
-
-	c2.Health -= int(float64(defaultDamage+power) * mul)
-}
-
-func AffectFunc2(c1, c2 *Character) {
-	c1.Shield += 5
-}
-
 func InitCharacter(tag bool) Character {
 	var buff []Effect
 	var deBuff []Effect
@@ -57,10 +27,10 @@ func InitCharacter(tag bool) Character {
 	}
 
 	Card1 := Card{
-		ID: 1, Name: "攻击", CardType: "attack", Cost: 1, AffectFunc: AffectFunc1,
+		ID: 1, Name: "攻击", CardType: "attack", Cost: 1, AffectFunc: &AffectFunc1{},
 	}
 	Card2 := Card{
-		ID: 2, Name: "防御", CardType: "defence", Cost: 1, AffectFunc: AffectFunc2,
+		ID: 2, Name: "防御", CardType: "defence", Cost: 1, AffectFunc: &AffectFunc2{},
 	}
 	return Character{
 		Name:        "a",
@@ -86,17 +56,20 @@ func InitCharacter(tag bool) Character {
 func TestDrawCards(t *testing.T) {
 	initC := InitCharacter(true)
 	initD := InitCharacter(false)
+
 	displayNum(initC, initD)
 
 	initC.DrawCard(5)
-	initC.HandCards[comm.R.Intn(len(initC.HandCards))].AffectFunc(&initC, &initD)
+	randC := comm.R.Intn(5)
+	initC.PlayCard(randC, &initD)
 
 	initD.DrawCard(5)
-	initD.HandCards[comm.R.Intn(len(initD.HandCards))].AffectFunc(&initD, &initC)
+	randD := comm.R.Intn(5)
+	initD.PlayCard(randD, &initC)
+
 	displayNum(initC, initD)
 
 	initC.EndTurn()
-	displayNum(initC, initD)
 
 }
 
