@@ -7,6 +7,5 @@ type AffectFuncInter interface {
 	Run(c1, c2 *Character)
 }
 
-// 确保 EffectFunc1 实现了 EffectFuncInter 接口
 var _ AffectFuncInter = (*AffectFunc1)(nil)
 var _ AffectFuncInter = (*AffectFunc2)(nil)
