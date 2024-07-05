@@ -12,7 +12,7 @@ type Enemy struct {
 	Buffs   []Effect
 	Debuffs []Effect
 
-	HandCards []Action
+	Action []Action
 }
 
 type Action struct {
