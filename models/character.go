@@ -69,3 +69,5 @@ func (c *Character) PlayCard(index int, enemy *Character) {
 func (c *Character) Restart() {}
 
 func (c *Character) GetCard() {}
+
+// 测试分支
